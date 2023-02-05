@@ -15,7 +15,7 @@ int main(){
     printf("%d x 7 = %d\n",num,num*7);
     printf("%d x 8 = %d\n",num,num*8);
     printf("%d x 9 = %d\n",num,num*9);
-    printf("%d x 10 = %d\n",num,num*10);
+    printf("%d x 10 = %d",num,num*10);
 
     return 0;
 }
