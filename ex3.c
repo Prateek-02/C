@@ -16,8 +16,7 @@ int fib_iter(int n){
     {
         b = a+b;   // b = a+b = 1
         a = b-a;   // a = b-a = 1
-    }
-    
+    } 
     return a;
 }
 int main(){
