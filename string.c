@@ -11,8 +11,10 @@ void printstr(char str[]){
 }
 int main(){
     // char str[] = {'P','r','a','t','e','e','k','\0'};
-    char str[8] = "Prateek";     // Value of string must be greater than the length of string by 1
-    char str[7] = "Prateek";     //it will also give the garbage value
+    // char str[8] = "Prateek";     // Value of string must be greater than the length of string by 1
+    // char str[7] = "Prateek";     //it will also give the garbage value
+    char str[34];
+    gets(str);
     printstr(str);
     return 0;
 }
