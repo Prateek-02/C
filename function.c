@@ -42,15 +42,13 @@ void count(){
     int n,total=0;
     printf("Enter the number: ");
     scanf("%d",&n);
-    int temp = n;
-    for (int i = 0; i <=n; i++)
-    {
-        int d = n%10;
-        total = total + d;
-        n = (int)n/10;
+    printf("The number of digits in %d is: ",n);
+    while(n>0){
+        total++;
+        n = n/10;
     }
-    printf("%d",temp);
+    printf("%d",total);
 }
 int main(){
-    void count();
+    count();
 }
