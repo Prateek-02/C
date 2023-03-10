@@ -15,9 +15,7 @@ int ispalindrom(int num)
 
     if(temp==rev)
     {
-        if(rev%temp==0){
-            printf("It is palindrom\n");
-        }
+        printf("It is palindrom\n");
       
     }
     else{
