@@ -1,5 +1,5 @@
+/*
 #include<stdio.h>
-
 void arrayrev(int arr[]){
     int temp;
     for (int i = 0; i < 4; i++)
@@ -24,4 +24,29 @@ int main(){
     printf("\nAfter reversing the array\n");
     arrayprint(arr);
     return 0;
+}
+*/
+
+//Method 2
+
+#include<stdio.h>
+int main(){
+    int size,i;
+    printf("Enter the size of array:" );
+    scanf("%d",&size);
+    int a[size];
+
+    for(i=0;i<size;i++){
+        scanf("%d",&a[i]);
+    }
+
+    int rev[size],j=0;
+    for(i=size-1;i>=0;i--){
+        rev[j] = a[i];
+        j++;
+    }
+
+    for(i=0;i<size;i++){
+        printf("%d ",rev[i]);
+    }
 }
