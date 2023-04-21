@@ -2,151 +2,179 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_PROPERTIES 100
-
+// structure for holding property information
 struct Property {
     int id;
-    char name[50];
-    char location[50];
-    char type[50];
+    char address[100];
+    char type[20];
     int price;
-    int status; // 0 for available, 1 for sold
 };
 
-struct Property properties[MAX_PROPERTIES];
-int num_properties = 0;
+// function prototypes
+void add_property();
+void delete_property();
+void update_property();
+void buy_property();
+void sell_property();
+
+int main() {
+    int choice;
+    printf("Welcome to Real Estate Advisor!\n");
+    printf("1. Add Property\n");
+    printf("2. Delete Property\n");
+    printf("3. Update Property\n");
+    printf("4. Buy Property\n");
+    printf("5. Sell Property\n");
+    printf("6. Quit\n");
+
+    do {
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                add_property();
+                break;
+            case 2:
+                delete_property();
+                break;
+            case 3:
+                update_property();
+                break;
+            case 4:
+                buy_property();
+                break;
+            case 5:
+                sell_property();
+                break;
+            case 6:
+                printf("Thank you for using Real Estate Advisor!\n");
+                break;
+            default:
+                printf("Invalid choice, please try again.\n");
+        }
+    } while (choice != 6);
+
+    return 0;
+}
 
 void add_property() {
-    if (num_properties >= MAX_PROPERTIES) {
-        printf("Cannot add more properties.\n");
-        return;
-    }
+    FILE *fp;
     struct Property p;
-    printf("Enter property details:\n");
-    printf("ID: ");
+    fp = fopen("properties.txt", "a");
+    printf("Enter property ID: ");
     scanf("%d", &p.id);
-    printf("Name: ");
-    scanf("%s", p.name);
-    printf("Location: ");
-    scanf("%s", p.location);
-    printf("Type: ");
+    printf("Enter property address: ");
+    scanf("%s", p.address);
+    printf("Enter property type: ");
     scanf("%s", p.type);
-    printf("Price: ");
+    printf("Enter property price: ");
     scanf("%d", &p.price);
-    p.status = 0; // property is available by default
-    properties[num_properties++] = p;
-    printf("Property added successfully.\n");
-}
-
-void display_properties() {
-    printf("ID\tName\tLocation\tType\tPrice\tStatus\n");
-    for (int i = 0; i < num_properties; i++) {
-        printf("%d\t%s\t%s\t%s\t%d\t%s\n", properties[i].id, properties[i].name,
-               properties[i].location, properties[i].type, properties[i].price,
-               properties[i].status == 0 ? "Available" : "Sold");
-    }
-}
-
-void search_properties() {
-    char search_term[50];
-    printf("Enter search term: ");
-    scanf("%s", search_term);
-    printf("ID\tName\tLocation\tType\tPrice\tStatus\n");
-    for (int i = 0; i < num_properties; i++) {
-        if (strstr(properties[i].name, search_term) || strstr(properties[i].location, search_term)
-            || strstr(properties[i].type, search_term)) {
-            printf("%d\t%s\t%s\t%s\t%d\t%s\n", properties[i].id, properties[i].name,
-                   properties[i].location, properties[i].type, properties[i].price,
-                   properties[i].status == 0 ? "Available" : "Sold");
-        }
-    }
+    fprintf(fp, "%d %s %s %d\n", p.id, p.address, p.type, p.price);
+    fclose(fp);
 }
 
 void delete_property() {
+    FILE *fp, *temp;
     int id;
+    struct Property p;
+    fp = fopen("properties.txt", "r");
+    temp = fopen("temp.txt", "w");
     printf("Enter ID of property to delete: ");
     scanf("%d", &id);
-    for (int i = 0; i < num_properties; i++) {
-        if (properties[i].id == id) {
-            // shift all properties after the deleted property one position to the left
-            for (int j = i; j < num_properties - 1; j++) {
-                properties[j] = properties[j+1];
-            }
-            num_properties--;
-            printf("Property deleted successfully.\n");
-            return;
+    while (fscanf(fp, "%d %s %s %d", &p.id, p.address, p.type, &p.price) != EOF) {
+        if (p.id != id) {
+            fprintf(temp, "%d %s %s %d\n", p.id, p.address, p.type, p.price);
         }
     }
-    printf("Property not found.\n");
+    fclose(fp);
+    fclose(temp);
+    remove("properties.txt");
+    rename("temp.txt", "properties.txt");
+}
+
+void update_property() {
+    FILE *fp, *temp;
+    int id, found = 0;
+    struct Property p;
+    fp = fopen("properties.txt", "r");
+    temp = fopen("temp.txt", "w");
+    printf("Enter ID of property to update: ");
+    scanf("%d", &id);
+    while (fscanf(fp, "%d %s %s %d", &p.id, p.address, p.type, &p.price) != EOF) {
+        if (p.id == id) {
+            found = 1;
+            printf("Enter new address: ");
+            scanf("%s", p.address);
+            printf("Enter new type: ");
+            scanf("%s", p.type);
+            printf("Enter new price: ");
+            scanf("%d", &p.price);
+        }
+        fprintf(temp, "%d %s %s %s %d\n", p.id, p.address, p.type, p.price);
+}
+fclose(fp);
+fclose(temp);
+remove("properties.txt");
+rename("temp.txt", "properties.txt");
+if (!found) {
+printf("Property not found.\n");
+} else {
+printf("Property updated.\n");
+}
 }
 
 void buy_property() {
-    int id;
-    printf("Enter ID of property to buy: ");
-    scanf("%d", &id);
-    for (int i = 0; i < num_properties; i++) {
-        if (properties[i].id == id && properties[i].status == 0) {
-            properties[i].status = 1;
-            printf("Property bought successfully.\n");
-            return;
-        }
-    }
-    printf("Property not found or already sold.\n");
+FILE *fp, *temp;
+int id, found = 0;
+struct Property p;
+fp = fopen("properties.txt", "r");
+temp = fopen("temp.txt", "w");
+printf("Enter ID of property to buy: ");
+scanf("%d", &id);
+while (fscanf(fp, "%d %s %s %d", &p.id, p.address, p.type, &p.price) != EOF) {
+if (p.id == id) {
+found = 1;
+printf("Property bought:\n");
+printf("Address: %s\n", p.address);
+printf("Type: %s\n", p.type);
+printf("Price: %d\n", p.price);
+} else {
+fprintf(temp, "%d %s %s %d\n", p.id, p.address, p.type, p.price);
+}
+}
+fclose(fp);
+fclose(temp);
+remove("properties.txt");
+rename("temp.txt", "properties.txt");
+if (!found) {
+printf("Property not found.\n");
+}
 }
 
 void sell_property() {
-    int id;
-    printf("Enter ID of property to sell:");
-    scanf("%d", &id);
-for (int i = 0; i < num_properties; i++) {
-if (properties[i].id == id && properties[i].status == 1) {
-properties[i].status = 0;
-printf("Property sold successfully.\n");
-return;
+FILE *fp, *temp;
+int id, found = 0;
+struct Property p;
+fp = fopen("properties.txt", "r");
+temp = fopen("temp.txt", "w");
+printf("Enter ID of property to sell: ");
+scanf("%d", &id);
+while (fscanf(fp, "%d %s %s %d", &p.id, p.address, p.type, &p.price) != EOF) {
+if (p.id == id) {
+found = 1;
+printf("Property sold:\n");
+printf("Address: %s\n", p.address);
+printf("Type: %s\n", p.type);
+printf("Price: %d\n", p.price);
+} else {
+fprintf(temp, "%d %s %s %d\n", p.id, p.address, p.type, p.price);
 }
 }
-printf("Property not found or already available.\n");
+fclose(fp);
+fclose(temp);
+remove("properties.txt");
+rename("temp.txt", "properties.txt");
+if (!found) {
+printf("Property not found.\n");
 }
-
-int main() {
-int choice;
-do {
-printf("Real Estate Advisor\n");
-printf("1. Add Property\n");
-printf("2. Display Properties\n");
-printf("3. Search Properties\n");
-printf("4. Delete Property\n");
-printf("5. Buy Property\n");
-printf("6. Sell Property\n");
-printf("7. Exit\n");
-printf("Enter your choice: ");
-scanf("%d", &choice);
-    switch (choice) {
-        case 1:
-            add_property();
-            break;
-        case 2:
-            display_properties();
-            break;
-        case 3:
-            search_properties();
-            break;
-        case 4:
-            delete_property();
-            break;
-        case 5:
-            buy_property();
-            break;
-        case 6:
-            sell_property();
-            break;
-        case 7:
-            printf("Exiting program.\n");
-            break;
-        default:
-            printf("Invalid choice.\n");
-    }
-} while (choice != 7);
-
-return 0;
 }
